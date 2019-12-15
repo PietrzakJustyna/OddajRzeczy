@@ -1588,7 +1588,7 @@ footer .bottom-line--copy {
 /* line 49, scss/modules/_footer.scss */
 footer .bottom-line--icons {
   position: absolute;
-  right: 10vw;
+  right: vw;
   bottom: 20px;
 }
 

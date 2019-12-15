@@ -1,14 +1,21 @@
 from django.db.models import Sum, Count
 from django.shortcuts import render
 from django.views import View
-from oddaj_app.models import Donations
+from oddaj_app.models import Donations, Institution
 
 
 class LandingPage(View):
     def get(self, request):
         num_of_bags = Donations.objects.aggregate(Sum('quantity'))['quantity__sum']
         num_of_institutions = Donations.objects.aggregate(Count('institution'))['institution__count']
-        return render(request, 'index.html', {'bags': num_of_bags, 'institutions': num_of_institutions})
+
+        foundations = Institution.objects.filter(type="Fundacja")
+        gov_organizations = Institution.objects.filter(type="Organizacja")
+        collections = Institution.objects.filter(type="Zbiorka")
+
+        return render(request, 'index.html', {'bags': num_of_bags, 'institutions': num_of_institutions,
+                                              "foundations": foundations, "gov_organizations": gov_organizations,
+                                              "collections": collections})
 
 
 class AddDonation(View):
