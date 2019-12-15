@@ -1,0 +1,8 @@
+*.pyc
+*.pyo
+env/
+tags
+.idea/*
+*.iml
+venv
+oddaj_project/secrets.py
