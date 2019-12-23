@@ -1,10 +1,11 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models import Sum, Count
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
-from oddaj_app.models import Donations, Institution
+from oddaj_app.models import Donations, Institution, Category
 
 
 class LandingPage(View):
@@ -21,9 +22,13 @@ class LandingPage(View):
                                               "collections": collections})
 
 
-class AddDonation(View):
+class AddDonation(LoginRequiredMixin, View):
+    login_url = "/login"
+
     def get(self, request):
-        return render(request, 'form.html')
+        categories = Category.objects.all()
+        organizations = Institution.objects.all()
+        return render(request, 'form.html', {'categories': categories, 'organizations': organizations})
 
 
 class Login(View):
@@ -31,10 +36,10 @@ class Login(View):
         return render(request, 'login.html')
 
     def post(self, request):
-        username = request.POST['email']
+        email = request.POST['email']
         password = request.POST['password']
 
-        user = authenticate(username=username, password=password)
+        user = authenticate(email=email, password=password)
 
         if user is not None:
             login(request, user)
@@ -59,3 +64,15 @@ class Register(View):
             new_user = User.objects.create_user(username=email, email=email, password=password, first_name=name,
                                                 last_name=surname)
         return redirect(reverse('login'))
+
+
+class LogoutView(View):
+    def get(self, request):
+        logout(request)
+        return redirect(reverse("landing_page"))
+
+
+class UserProfileView(View):
+    def get(self, request):
+        user = request.user
+        return render(request, 'user_profile.html', {'user': user})

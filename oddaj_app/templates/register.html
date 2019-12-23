@@ -1,14 +1,35 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-  <body>
-    <header>
-      <nav class="container container--70">
+
+<body>
+{% if user.is_authenticated %}
+
+<header>
+    <nav class="container container--70">
         <ul class="nav--actions">
-          <li><a href="{% url 'login' %}">Zaloguj</a></li>
-          <li class="highlighted"><a href="{% url 'register' %}">Załóż konto</a></li>
+            <li class="logged-user">
+                Witaj {{user.first_name}}
+                <ul class="dropdown">
+                   <li><a href="{% url 'user_profile' %}">Profil</a></li>
+                    <li><a href="#">Ustawienia</a></li>
+                    {% if user.is_superuser %}
+                    <li><a href="{% url 'admin:index' %}">Panel administracyjny</a></li>
+                    {% endif %}
+                    <li><a href="{% url 'logout' %}">Wyloguj</a></li>
+                </ul>
+            </li>
         </ul>
 
+        {% else %}
+
+        <header>
+            <nav class="container container--70">
+                <ul class="nav--actions">
+                    <li><a href="{% url 'login' %}">Zaloguj</a></li>
+                    <li class="highlighted"><a href="{% url 'register' %}">Załóż konto</a></li>
+                </ul>
+                {% endif %}
         <ul>
           <li><a href="{% url 'landing_page' %}">Start</a></li>
           <li><a href="{% url 'landing_page' %}#steps">O co chodzi?</a></li>

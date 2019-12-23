@@ -104,6 +104,12 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+# User substitution
+# https://docs.djangoproject.com/en/1.11/topics/auth/customizing/#auth-custom-user
+
+AUTH_USER_MODEL = 'oddaj_app.User'
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
