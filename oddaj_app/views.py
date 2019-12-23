@@ -1,5 +1,8 @@
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
 from django.db.models import Sum, Count
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.views import View
 from oddaj_app.models import Donations, Institution
 
@@ -27,7 +30,32 @@ class Login(View):
     def get(self, request):
         return render(request, 'login.html')
 
+    def post(self, request):
+        username = request.POST['email']
+        password = request.POST['password']
+
+        user = authenticate(username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect(reverse('landing_page'))
+
+        else:
+            return redirect(reverse('register'))
+
 
 class Register(View):
     def get(self, request):
         return render(request, 'register.html')
+
+    def post(self, request):
+        name = request.POST['name']
+        surname = request.POST['surname']
+        email = request.POST['email']
+        password = request.POST['password']
+        password2 = request.POST['password2']
+
+        if password == password2:
+            new_user = User.objects.create_user(username=email, email=email, password=password, first_name=name,
+                                                last_name=surname)
+        return redirect(reverse('login'))
