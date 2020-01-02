@@ -1,6 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
 from django.db.models import Sum, Count
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -9,7 +8,7 @@ from django.views import View
 from django.views.generic import UpdateView
 
 from oddaj_app.forms import UserUpdateForm
-from oddaj_app.models import Donations, Institution, Category
+from oddaj_app.models import Donations, Institution, Category, User
 from django.core.paginator import Paginator
 
 
@@ -76,7 +75,7 @@ class Register(View):
         password2 = request.POST['password2']
 
         if password == password2:
-            new_user = User.objects.create_user(username=email, email=email, password=password, first_name=name,
+            new_user = User.objects.create_user(email=email, password=password, first_name=name,
                                                 last_name=surname)
         return redirect(reverse('login'))
 
@@ -95,11 +94,10 @@ class UserProfileView(View):
 
 
 class FilterInstitutionsInFormView(View):
-    def post(self, request, data):
-        institutions = []
-        for cat in data[categories_list]:
-            category = Category.objects.get(id=cat)
-            institutions.append(Institution.objects.filter(categories__in=category).distinct)
+    def get(self, request):
+        categories_list = request.GET.getlist('categories')
+        institutions_qs = Institution.objects.filter(categories__in=categories_list).distinct()
+        institutions = [inst.id for inst in institutions_qs]
         return JsonResponse({'institutions': institutions})
 
 

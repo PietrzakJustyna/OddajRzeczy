@@ -236,22 +236,27 @@ document.addEventListener("DOMContentLoaded", function() {
       var button_filter = document.querySelector("#div-step-2").querySelector(".next-step");
 
             var categories_choice = document.querySelector("#div-step-1").querySelectorAll(".form-group--checkbox input")
-            var checked_value = []
+            var checked_value = "";
             categories_choice.forEach(function(e){
             if (e.checked){
-                checked_value.push(e.value)}
-            })
+                checked_value += "categories=" + e.value +"&"}
+            });
+
+        var institutions_all = document.querySelector('#div-step-3').querySelectorAll(".form-group--checkbox")
+
+        console.log(institutions_all)
 
       button_filter.addEventListener("click", function(){
 
               $.ajax({
                 headers: {"X-CSRFToken": CSRF_TOKEN},
-                url: "/filter_institutions",
-                data: {"categories_list": checked_value},
-                type: "POST",
+                url: "/filter_institutions?"+checked_value,
                 dataType: "json"
             }).done(function (result) {
+            console.log(result.institutions)
             }).fail(function (xhr, status, err) {
+            console.log("failed")
+            console.log(checked_value)
             });
         });
 

@@ -27,7 +27,7 @@ urlpatterns = [
     path('register', Register.as_view(), name='register'),
     path('logout', LogoutView.as_view(), name='logout'),
     path('user_profile', UserProfileView.as_view(), name='user_profile'),
-    path('filter_institutions', FilterInstitutionsInFormView, name='json_filter'),
+    path('filter_institutions', FilterInstitutionsInFormView.as_view(), name='json_filter'),
     path("user_update", UserUpdateView.as_view(), name='user_update'),
 
 ]
