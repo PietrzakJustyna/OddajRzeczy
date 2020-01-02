@@ -231,8 +231,33 @@ document.addEventListener("DOMContentLoaded", function() {
         }
       });
 
+
+
+      var button_filter = document.querySelector("#div-step-2").querySelector(".next-step");
+
+            var categories_choice = document.querySelector("#div-step-1").querySelectorAll(".form-group--checkbox input")
+            var checked_value = []
+            categories_choice.forEach(function(e){
+            if (e.checked){
+                checked_value.push(e.value)}
+            })
+
+      button_filter.addEventListener("click", function(){
+
+              $.ajax({
+                headers: {"X-CSRFToken": CSRF_TOKEN},
+                url: "/filter_institutions",
+                data: {"categories_list": checked_value},
+                type: "POST",
+                dataType: "json"
+            }).done(function (result) {
+            }).fail(function (xhr, status, err) {
+            });
+        });
+
       this.$stepInstructions[0].parentElement.parentElement.hidden = this.currentStep >= 6;
       this.$step.parentElement.hidden = this.currentStep >= 6;
+
 
       // TODO: get data from inputs and show them in summary
     }

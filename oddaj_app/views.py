@@ -2,24 +2,36 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models import Sum, Count
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
 from oddaj_app.models import Donations, Institution, Category
+from  django.core.paginator import Paginator
 
 
 class LandingPage(View):
     def get(self, request):
         num_of_bags = Donations.objects.aggregate(Sum('quantity'))['quantity__sum']
         num_of_institutions = Donations.objects.aggregate(Count('institution'))['institution__count']
+        page = request.GET.get('page')
 
         foundations = Institution.objects.filter(type="Fundacja")
+        paginator_foundations = Paginator(foundations, 5)
+        page_foundations = paginator_foundations.get_page(page)
+
         gov_organizations = Institution.objects.filter(type="Organizacja")
+        paginator_organizations = Paginator(gov_organizations, 5)
+        page_organizaitons = paginator_organizations.get_page(page)
+
         collections = Institution.objects.filter(type="Zbiorka")
+        paginator_collections = Paginator(collections, 5)
+        page_collections = paginator_collections.get_page(page)
 
         return render(request, 'index.html', {'bags': num_of_bags, 'institutions': num_of_institutions,
-                                              "foundations": foundations, "gov_organizations": gov_organizations,
-                                              "collections": collections})
+                                              "foundations": page_foundations,
+                                              "gov_organizations": page_organizaitons,
+                                              "collections": page_collections})
 
 
 class AddDonation(LoginRequiredMixin, View):
@@ -75,4 +87,14 @@ class LogoutView(View):
 class UserProfileView(View):
     def get(self, request):
         user = request.user
-        return render(request, 'user_profile.html', {'user': user})
+        donations = Donations.objects.filter(user_id=user.id)
+        return render(request, 'user_profile.html', {'user': user, "donations": donations})
+
+
+class FilterInstitutionsInFormView(View):
+    def post(self, request, data):
+        institutions = []
+        for cat in data[categories_list]:
+            category = Category.objects.get(id=cat)
+            institutions.append(Institution.objects.filter(categories__in=category).distinct)
+        return JsonResponse({'institutions': institutions})

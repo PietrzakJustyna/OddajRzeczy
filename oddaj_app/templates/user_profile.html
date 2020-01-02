@@ -41,16 +41,62 @@
             </nav>
 </header>
 
-            <section id="user-profile" class="user-profile">
+            <section class="user-profile">
             <div class="user-profile--text">
-                  <h1>Twoje dane</h1>
-            <ul>
-                <li>Imię: {{user.first_name}} </li>
-                <li>Nazwisko: {{user.last_name}}</li>
-                <li>Email: {{user.email}}</li>
-            </ul>
+                  <h2>Twoje dane</h2>
+            <table>
+                <tr>
+                    <td>Imię: </td>
+                    <td>{{user.first_name}}</td>
+                </tr>
+                <tr>
+                    <td>Nazwisko: </td>
+                    <td>{{user.last_name}}</td>
+                </tr>
+                <tr>
+                    <td>Email: </td>
+                    <td>{{user.email}}</td>
+                </tr>
+            </table>
             </div>
             </section>
+
+        <section class="user-profile">
+            <div class="user-profile--text">
+            <h2>Twoje dary</h2>
+
+            <table id="donations_table">
+                <tr>
+                    <th>Instytucja</th>
+                    <th>Ilość worków</th>
+                    <th>Kategorie darów</th>
+                    <th>Kiedy zabrane?</th>
+                    <th>Status</th>
+                </tr>
+                    {% for donation in donations %}
+                <tr>
+                    <td>{{donation.institution.name}}</td>
+                    <td>{{donation.quantity}}</td>
+                    <td>
+                        {% for category in donation.categories.all %}
+                        {{ category.name }}
+                        {% endfor %}
+                    </td>
+                    <td>{{donation.pick_up_date}}, {{donation.pick_up_time}}</td>
+                    <td>
+                       {% if donation.is_taken == True %}
+                            Worki zabrane
+                            {% else %}
+                            <button>
+                                Oznacz jako zabrane
+                            </button>
+                            {% endif %}
+                    </td>
+                </tr>
+                    {% endfor %}
+            </table>
+            </div>
+        </section>
 
 
 {% endblock %}
