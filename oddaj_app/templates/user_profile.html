@@ -11,7 +11,7 @@
                 Witaj {{user.first_name}}
                 <ul class="dropdown">
                     <li><a href="{% url 'user_profile' %}">Profil</a></li>
-                    <li><a href="#">Ustawienia</a></li>
+                    <li><a href="{% url 'user_update' %}">Ustawienia</a></li>
                     {% if user.is_superuser %}
                     <li><a href="{% url 'admin:index' %}">Panel administracyjny</a></li>
                     {% endif %}
@@ -87,7 +87,7 @@
                        {% if donation.is_taken == True %}
                             Worki zabrane
                             {% else %}
-                            <button>
+                            <button class="archive-donation">
                                 Oznacz jako zabrane
                             </button>
                             {% endif %}

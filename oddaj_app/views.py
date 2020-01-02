@@ -2,12 +2,15 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models import Sum, Count
-from django.http import JsonResponse
-from django.shortcuts import render, redirect
-from django.urls import reverse
+from django.http import JsonResponse, HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse, reverse_lazy
 from django.views import View
+from django.views.generic import UpdateView
+
+from oddaj_app.forms import UserUpdateForm
 from oddaj_app.models import Donations, Institution, Category
-from  django.core.paginator import Paginator
+from django.core.paginator import Paginator
 
 
 class LandingPage(View):
@@ -98,3 +101,27 @@ class FilterInstitutionsInFormView(View):
             category = Category.objects.get(id=cat)
             institutions.append(Institution.objects.filter(categories__in=category).distinct)
         return JsonResponse({'institutions': institutions})
+
+
+class ArchiveDonationView(View):
+    def post(self, request, donation_id, is_taken):
+        donation = get_object_or_404(Donations, pk=donation_id)
+        donation.is_taken = is_taken
+        donation.save()
+
+        return HttpResponse(status=204)
+
+
+class UserUpdateView(View):
+
+    def get(self, request):
+        form = UserUpdateForm(instance=request.user)
+        return render(request, "user_update.html", {"form": form})
+
+    def post(self, request):
+        form = UserUpdateForm(request.POST, instance=request.user)
+
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('user_profile'))
+

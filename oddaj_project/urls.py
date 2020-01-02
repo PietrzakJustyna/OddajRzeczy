@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 
 from oddaj_app.views import LandingPage, AddDonation, Login, Register, LogoutView, UserProfileView, \
-    FilterInstitutionsInFormView
+    FilterInstitutionsInFormView, UserUpdateView
 
 urlpatterns = [
     path('', LandingPage.as_view(), name='landing_page'),
@@ -28,5 +28,6 @@ urlpatterns = [
     path('logout', LogoutView.as_view(), name='logout'),
     path('user_profile', UserProfileView.as_view(), name='user_profile'),
     path('filter_institutions', FilterInstitutionsInFormView, name='json_filter'),
+    path("user_update", UserUpdateView.as_view(), name='user_update'),
 
 ]
