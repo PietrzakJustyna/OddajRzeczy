@@ -242,18 +242,20 @@ document.addEventListener("DOMContentLoaded", function() {
                 checked_value += "categories=" + e.value +"&"}
             });
 
-        var institutions_all = document.querySelector('#div-step-3').querySelectorAll(".form-group--checkbox")
+        var institutions_all = document.querySelector('#div-step-3').querySelectorAll(".form-group--checkbox input")
 
-        console.log(institutions_all)
-
-      button_filter.addEventListener("click", function(){
+        button_filter.addEventListener("click", function(){
 
               $.ajax({
                 headers: {"X-CSRFToken": CSRF_TOKEN},
                 url: "/filter_institutions?"+checked_value,
                 dataType: "json"
             }).done(function (result) {
-            console.log(result.institutions)
+
+                institutions_all.forEach(function(institution){
+                if (!(institution.value in result.institutions)){
+                console.log(institution.value)}
+            })
             }).fail(function (xhr, status, err) {
             console.log("failed")
             console.log(checked_value)
@@ -264,7 +266,7 @@ document.addEventListener("DOMContentLoaded", function() {
       this.$step.parentElement.hidden = this.currentStep >= 6;
 
 
-      // TODO: get data from inputs and show them in summary
+
     }
 
     /**
